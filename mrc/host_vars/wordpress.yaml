@@ -1,0 +1,12 @@
+---
+
+volumns:
+  - device: /dev/vdb
+    mountpoint: /var/lib/docker
+  
+wp_dir: wordpress
+
+database_name: wordpress
+database_user: wordpress
+database_password: wordpress
+mysql_root_password: "l4d2"

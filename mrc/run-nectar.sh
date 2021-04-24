@@ -1,0 +1,1 @@
+. ./unimelb-comp90024-2021-grp-63-openrc.sh; ansible-playbook mrc.yaml

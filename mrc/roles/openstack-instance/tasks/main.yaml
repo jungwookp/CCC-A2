@@ -1,0 +1,37 @@
+---
+
+- name: Create an instance
+  os_server:
+    name: '{{ item.name }}'
+    image: '{{ instance_image }}'
+    key_name: '{{ instance_key_name }}'
+    flavor: '{{ instance_flavor }}'
+    availability_zone: '{{ availability_zone }}'
+    security_groups: '{{ sg_names }}'
+    volumes: '{{ item.volumes }}'
+    auto_floating_ip: yes
+    wait: yes
+    timeout: 600
+    state: present
+  loop: '{{ instances }}'
+  register: os_instance
+  
+- debug:
+    msg: "Instance {{ item.openstack.name }} has been created. Ip address is {{ item.openstack.public_v4 }}."
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+- debug: var=inventory_hostname
+- debug: var=ansible_hostname
+- debug: 
+    msg: '{{ ansible_ssh_private_key_file }}'
+
+  
+  
+- name: Add host
+  add_host:
+    name: '{{ item.openstack.public_v4 }}'
+    groups: COMP90024
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+  
