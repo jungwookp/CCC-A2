@@ -34,10 +34,24 @@
   loop: '{{ os_instance.results }}'
   when: item.openstack is defined
   
-- name: Add host
+- name: Add host to groups
   add_host:
     name: '{{ item.openstack.public_v4 }}'
     groups: COMP90024
   loop: '{{ os_instance.results }}'
   when: item.openstack is defined
+  
+- name: Add host to web
+  add_host:
+    name: '{{ item.openstack.public_v4 }}'
+    groups: WEB
+  loop: '{{ os_instance.results }}'
+  when: item.openstack.name == web_instance_name
+  
+- name: Add host to db
+  add_host:
+    name: '{{ item.openstack.public_v4 }}'
+    groups: DB
+  loop: '{{ os_instance.results }}'
+  when: item.openstack.name == db_instance_name
   

@@ -20,4 +20,13 @@
     - role: wp-common
     - role: wp-volume
     - role: wp-docker
-    - role: wp-wordpress
+
+- hosts: WEB
+  gather_facts: true
+  roles:
+    - role: web-nginx
+
+- hosts: DB
+  gather_facts: true
+  roles:
+    - role: db-couchdb
