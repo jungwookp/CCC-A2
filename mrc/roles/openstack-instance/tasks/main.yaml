@@ -23,10 +23,16 @@
 
 - debug: var=inventory_hostname
 - debug: var=ansible_hostname
-- debug: 
-    msg: '{{ ansible_ssh_private_key_file }}'
 
-  
+- name: Wait for connection
+  wait_for:
+    host: "{{ item.openstack.public_v4 }}"
+    port: 22
+    timeout: 120
+    search_regex: OpenSSH
+    msg: "port 22 is not listening"
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
   
 - name: Add host
   add_host:

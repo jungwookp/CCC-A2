@@ -17,5 +17,7 @@
   gather_facts: true
   
   roles:
-    - role: wait-for-port
-    
+    - role: wp-common
+    - role: wp-volume
+    - role: wp-docker
+    - role: wp-wordpress

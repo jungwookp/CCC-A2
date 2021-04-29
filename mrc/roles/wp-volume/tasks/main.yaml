@@ -10,7 +10,7 @@
     update_cache: yes
 
 - name: Make file system
-  tags: 'volumns'
+  tags: 'volumes'
   become: yes
   filesystem:
     fstype: xfs
@@ -18,9 +18,18 @@
   when: item.device is defined
   with_items:
     - "{{ volumes }}"
-    
+
+- name: Checking folders
+  tags: 'volumes'
+  become: yes
+  stat:
+    path: "{{ item.mountpoint }}"
+  register: directory_stats
+  with_items:
+    - "{{ volumes }}"
+
 - name: Create directory
-  tags: 'volumns'
+  tags: 'volumes'
   become: yes
   file:
     path: "{{ item.item.mountpoint }}"
@@ -39,15 +48,6 @@
     fstype: xfs
     state: mounted
   when: item.device is defined
-  with items:
-    - "{{ volumes }}"
-  
-- name: Checking folders
-  tags: 'volumes'
-  become: yes
-  stats:
-    path: "{{ item.mountpoint }}"
-  register: directory_stats
   with_items:
-     "{{ volumes }}"
+    - "{{ volumes }}"
   
