@@ -1,0 +1,13 @@
+---
+nodes:
+  - node: 172.17.0.4
+  - node: 172.17.0.3
+  - node: 172.17.0.2
+  
+masternode: 172.17.0.4
+
+database_name: xdgao
+database_user: admin
+database_password: admin
+database_version: '3.1.1'
+database_cookie: a192aeb9904e6590849337933b000c99

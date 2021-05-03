@@ -20,6 +20,12 @@ security_groups:
     port_range_min: 80
     port_range_max: 80
     remote_ip_prefix: 0.0.0.0/0
+  - name: couchdb
+    description: "security group for couchdb"
+    protocol: tcp
+    port_range_min: 4300
+    port_range_max: 9200
+    remote_ip_prefix: 0.0.0.0/0
 
 web_instance_name: webserver
 db_instance_name: dbserver

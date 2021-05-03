@@ -28,5 +28,7 @@
 
 - hosts: DB
   gather_facts: true
+  vars_files:
+    - host_vars/db.yaml
   roles:
     - role: db-couchdb

@@ -1,0 +1,56 @@
+---
+
+- name: Create directory
+  become: yes
+  file:
+    path: "/home/ubuntu/.docker"
+    recurse: yes 
+    state: directory
+
+- name: set up config file 1
+  become: yes
+  template:
+    src: /home/ubuntu/.docker/config.json
+    dest: /home/ubuntu/.docker/config.json
+    mode: '0664'
+
+- name: restart docker
+  become: yes
+  command: "service docker restart"
+
+- name: create folder for configure proxy
+  become: yes
+  file:
+    path: "/etc/systemd/system/docker.service.d"
+    recurse: yes 
+    state: directory
+    
+- name: set up config file 2
+  become: yes
+  template:
+    src: /etc/systemd/system/docker.service.d/http-proxy.conf
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+    mode: '0664'
+
+- name: reload systemd daemon
+  become: yes
+  command: "systemctl daemon-reload"
+  
+- name: restart docker
+  become: yes
+  command: "systemctl restart docker"
+
+- name: docker pull ibmcom/couchdb
+  become: yes
+  command: "docker pull ibmcom/couchdb3:{{ database_version }}"
+  
+- name: create Docker container
+  become: yes
+  command: "docker create
+               --name db{{ item.node }}
+               --env COUCHDB_USER={{ database_user }}
+               --env COUCHDB_PASSWORD={{ database_password }}
+               --env COUCHDB_SECRET={{ database_cookie }}
+               --env ERL_FLAGS='-setcookie {{ database_cookie }} -name db@{{ item.node }}'
+               ibmcom/couchdb3:{{ database_version }}"            
+  loop: '{{ nodes }}'
