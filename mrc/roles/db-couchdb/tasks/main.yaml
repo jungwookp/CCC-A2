@@ -43,14 +43,69 @@
 - name: docker pull ibmcom/couchdb
   become: yes
   command: "docker pull ibmcom/couchdb3:{{ database_version }}"
+
+- name: retrieve the list of existing couchdb container
+  become: yes
+  shell: "docker ps --all | grep couchdb | cat"
+  register: conts 
   
+- name: debugging
+  debug: 
+    msg: "{{ conts }}"
+
+- name: stop existing docker container
+  become: yes
+  shell: "docker stop couchdb{{ item.node }}"
+  loop: "{{ nodes }}" 
+  when: conts.stdout.find('Up') != -1
+
+- name: retrieve the list of existing couchdb container
+  become: yes
+  shell: "docker ps --all | grep couchdb | cat"
+  register: conts 
+  
+- name: debugging
+  debug: 
+    msg: "{{ conts }}"
+
+- name: delete existing docker container
+  become: yes
+  shell: "docker rm couchdb{{ item.node }}"
+  loop: "{{ nodes }}"
+  when: conts.stdout.find('Created') != -1 or conts.stdout.find('Exited') != -1
+
 - name: create Docker container
   become: yes
-  command: "docker create
-               --name db{{ item.node }}
-               --env COUCHDB_USER={{ database_user }}
-               --env COUCHDB_PASSWORD={{ database_password }}
-               --env COUCHDB_SECRET={{ database_cookie }}
-               --env ERL_FLAGS='-setcookie {{ database_cookie }} -name db@{{ item.node }}'
-               ibmcom/couchdb3:{{ database_version }}"            
-  loop: '{{ nodes }}'
+  shell: "docker create
+  --name couchdb{{ item.node }}
+  --env COUCHDB_USER={{ database_user }}
+  --env COUCHDB_PASSWORD={{ database_password }}
+  --env COUCHDB_SECRET={{ database_cookie }} 
+  --env ERL_FLAGS=\"-setcookie \\\"{{ database_cookie }}\\\" -name \\\"couchdb@{{ item.node }}\\\"\" 
+  --publish {{ item.port }}:5984
+  ibmcom/couchdb3:{{ database_version }}"
+  loop: "{{ nodes }}"        
+
+- name: start Docker container
+  become: yes
+  shell: "docker start couchdb{{ item.node }}"
+  loop: "{{ nodes }}"
+
+- name: set up docker cluster
+  uri: 
+    url: "http://localhost:{{ master_port }}/_cluster_setup" 
+    url_username: "{{ database_user }}"
+    url_password: "{{ database_password }}"
+    method: POST
+    body: "{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\",
+  \"username\": \"{{ database_user }}\", \"password\":\"{{ database_password }}\", \"port\": \"{{ item.port }}\",
+  \"remote_node\": \"localhost\", \"node_count\": \"{{ database_num }}\",
+  \"remote_current_user\":\"{{ database_user }}\", \"remote_current_password\":\"{{ database_password }}\"}\""
+    body_format: json
+    headers: 
+      Content-Type: "application/json"
+  loop: "{{ othernodes }}"
+
+- name: set up docker cluster continued
+  shell: "curl -X PUT \"http:\/\/{{ database_user }}:{{ database_password }}@localhost:{{ master_port }}\/_node\/_local\/_nodes\/couchdb@{{ item.node }}\" -d {}"
+  loop: "{{ othernodes }}" 
