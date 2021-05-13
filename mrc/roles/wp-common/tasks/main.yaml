@@ -3,6 +3,13 @@
   setup:
     gather_subset: all
 
+- name: copy http-proxy file in etc/environment
+  become: yes
+  template:
+    src: /etc/environment
+    dest: /etc/environment
+    mode: '0666'
+
 - name: Install dependencies
   tags: always
   become: yes
