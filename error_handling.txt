@@ -11,7 +11,7 @@ Error 2
 	Error code:
 		failed: [localhost] (item={u'name': u'webserver', u'volumes': [u'web-vol-1']}) => {"ansible_loop_var": "item", "changed": false, "extra_data": null, "item": {"name": "webserver", "volumes": ["web-vol-1"]}, "msg": "BadRequestException: 400: Client Error for url: https://nova.rc.nectar.org.au:8774/v2.1/2c1b51ce49ce440b8f6e669d0de7cdce/os-volumes_boot, Invalid key_name provided."}
 
-Solution 1
+Solution 2
 	mispelling the key name, correct it and it works.
 
 
@@ -32,13 +32,13 @@ Failed Attempt 4
 Failed Attempt 5
 	use wait_for_connection and in-memory inventory to specify hosts. It bypasses the error message but generate a new one.
 
-Solution
+Solution 3
 	set permission level of 700 for private key file do the job.
 
 Error 4
 	ansible failed to update apt cache 
 	
-Solution
+Solution 4
 	append http_proxy to /etc/environment
 	
 Error 5

@@ -1,19 +1,19 @@
 ---
 nodes:
-  - node: aurin
+  - node: 172.17.0.2
     port: 5984
-  - node: processed_tw
+  - node: 172.17.0.3
     port: 5985
-  - node: raw_tw
+  - node: 172.17.0.4
     port: 5986
   
-master_node: aurin
+master_node: 172.17.0.2
 master_port: 5984
 
 othernodes:
-  - node: processed_tw
+  - node: 172.17.0.3
     port: 5985
-  - node: raw_tw
+  - node: 172.17.0.4
     port: 5986
 
 database_num: 3

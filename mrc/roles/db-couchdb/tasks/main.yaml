@@ -68,11 +68,6 @@
   debug: 
     msg: "{{ conts }}"
 
-- name: delete existing docker container
-  become: yes
-  shell: "docker rm couchdb{{ item.node }}"
-  loop: "{{ nodes }}"
-  when: conts.stdout.find('Created') != -1 or conts.stdout.find('Exited') != -1
 
 - name: create Docker container
   become: yes
@@ -91,20 +86,17 @@
   shell: "docker start couchdb{{ item.node }}"
   loop: "{{ nodes }}"
 
-- name: set up docker cluster
-  uri: 
-    url: "http://localhost:{{ master_port }}/_cluster_setup" 
-    validate_certs: no
-    use_proxy: no
-    url_username: "{{ database_user }}"
-    url_password: "{{ database_password }}"
-    method: POST
-    headers: 
-      Content-Type: "application/json"
-    body: "{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\",
-  \"username\": \"{{ database_user }}\", \"password\":\"{{ database_password }}\", \"port\": \"{{ item.port }}\",
-  \"remote_node\": \"localhost\", \"node_count\": \"{{ database_num }}\",
-  \"remote_current_user\":\"{{ database_user }}\", \"remote_current_password\":\"{{ database_password }}\"}\""
+- name: wait for 10 second
+  wait_for:
+    timeout: 10
+
+- name: set up docker cluster 
+  shell: "curl -XPOST \"http://admin:admin@localhost:{{ master_port }}/_cluster_setup\"
+    --header \"Content-Type: application/json\"
+    --data \"{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\",
+    \"username\": \"{{ database_user }}\", \"password\":\"{{ database_password }}\", \"port\": \"{{ item.port }}\",
+    \"remote_node\": \"localhost\", \"node_count\": \"{{ database_num }}\",
+    \"remote_current_user\":\"{{ database_user }}\", \"remote_current_password\":\"{{ database_password }}\"}\""
   loop: "{{ othernodes }}"
 
 - name: set up docker cluster continued
