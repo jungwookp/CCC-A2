@@ -1,12 +1,8 @@
 import React from 'react';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-
 import AppBar  from './Appbar';
-import InputModal from "./ParameterModel";
-import Plot from "./Plot";
+import InputModal from './ParameterModel';
+import Content from './Content';
 
 import './App.css';
 
@@ -33,24 +29,13 @@ function App() {
 }
 */
 
-const useStyles = makeStyles((theme) => ({
-  content: {
-      padding: theme.spacing(2),
-      textAlign: 'center',
-  },
-  input: {
-      width: 300
-  }
-}));
+
 
 function App() {
-  const classes = useStyles();
 
   const [title, setTitle] = React.useState("CCC-Demo");
   const [modalOpen, setModalOpen] = React.useState(false);
   const [ baselineText, setBaselineText ] = React.useState()
-
-  
 
   return (
     <React.Fragment>
@@ -61,13 +46,7 @@ function App() {
                     onSetBaseline={(bs)=>{ setBaselineText(bs) }}
                     />
       </React.Fragment>
-      <React.Fragment>
-        <Grid container spacing={2} className={classes.content}>
-          <Grid item xs={12}> <Typography variant="h4"> {title}  </Typography>  </Grid>
-          <Grid item xs={12}> <Plot baseline={baselineText} />  </Grid>
-          <Grid item xs={12}> <Typography variant="h4"> {baselineText}  </Typography>  </Grid>
-        </Grid>
-      </React.Fragment>
+      <Content title={title} baseline={baselineText}/>
     </React.Fragment>
   )
 }
