@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ParameterModal(props) {
     const classes = useStyles();
-    const { open, handleClose, onConfirm, onSetBaseline,  ...rest } = props;
+    const { open, handleClose, onConfirm, onSetBaseline, onSetPlotType } = props;
 
     const [title, setTitle] = React.useState("Untitled")
     const analysisTypeOptions = [
@@ -92,7 +92,11 @@ export default function ParameterModal(props) {
             <Grid item xs={12}> {baselineInput} </Grid>
             <Grid item xs={12}> <Typography> {analysisTypeSelect} </Typography>  </Grid>
             <Grid item xs={5}>  <Button variant="contained" color="primary"
-                                        onClick={()=>{onConfirm(title); onSetBaseline(baseline); handleClose(); }}> 
+                                        onClick={()=>{
+                                          onConfirm(title);
+                                          onSetBaseline(baseline);
+                                          onSetPlotType(analysisType)
+                                          handleClose(); }}> 
                                         Confirm
                                 </Button> </Grid>
             <Grid item xs={2}>  </Grid>

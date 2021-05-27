@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Content(props) {
     const classes = useStyles();
-    const {baseline, title} = props;
+    const {baseline, title, plotType} = props;
+
 
     // useEffect(() => {
     //     word2vec(baseline).then((vec) => {
@@ -33,7 +34,7 @@ export default function Content(props) {
         <React.Fragment>
             <Grid container spacing={2} className={classes.content}>
                 <Grid item xs={12}> <Typography variant="h4"> {title}  </Typography>  </Grid>
-                <Grid item xs={12}> <Plot baseline={baseline} />  </Grid>
+                <Grid item xs={12}> <Plot baseline={baseline} plotType={plotType} />  </Grid>
                 <Grid item xs={12}> <Typography variant="h4"> {baseline}  </Typography>  </Grid>
             </Grid>
         </React.Fragment>

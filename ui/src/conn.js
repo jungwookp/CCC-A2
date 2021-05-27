@@ -3,7 +3,7 @@
 export const UI_BACKENT = "http://localhost:8944";
 export const ENDPOINT_ANALYSIS = `${UI_BACKENT}/analysis`; 
 export const ENDPOINT_WORD2VEC = `${UI_BACKENT}/word2vec`;
-
+export const ENDPOINT_AURIN    = `${UI_BACKENT}/aurin`
 
 export async function getAnalysisResult( baseline ) {
     let response = await fetch(ENDPOINT_ANALYSIS, {
@@ -35,4 +35,14 @@ export async function word2vec( text ) {
     });
     let rst = await response.json()
     return rst["data"];
+}
+
+export async function getAURIN( doc ) {
+    let response = await fetch(
+        `${ENDPOINT_WORD2VEC}/${doc}`, {
+        method: "GET",
+        mode: "cors",
+        redirect: "follow",
+    });
+    return await response.json()
 }

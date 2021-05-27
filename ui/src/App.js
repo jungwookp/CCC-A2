@@ -29,13 +29,12 @@ function App() {
 }
 */
 
-
-
 function App() {
 
-  const [title, setTitle] = React.useState("CCC-Demo");
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [ baselineText, setBaselineText ] = React.useState()
+  const [ title, setTitle ] = React.useState("CCC-Demo");
+  const [ modalOpen, setModalOpen ] = React.useState(false);
+  const [ baselineText, setBaselineText ] = React.useState();
+  const [ plotType, setPlotType ] = React.useState();
 
   return (
     <React.Fragment>
@@ -44,9 +43,10 @@ function App() {
         <InputModal open={modalOpen} handleClose={()=>{setModalOpen(false)}} 
                     onConfirm={(title)=>{ setTitle(title) }} 
                     onSetBaseline={(bs)=>{ setBaselineText(bs) }}
+                    onSetPlotType={setPlotType}
                     />
       </React.Fragment>
-      <Content title={title} baseline={baselineText}/>
+      <Content title={title} baseline={baselineText} plotType={plotType} />
     </React.Fragment>
   )
 }

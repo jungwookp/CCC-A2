@@ -228,6 +228,15 @@ def do_analysis():
         del rst['NaZ']
     return rst
 
+
+@app.route("/aurin/<doc:str>", methods=["GET"])
+def aurin(doc):
+    log("Recv AURIN")
+    add_request_static()
+    data = analysis.get_aurin_data(AURIN_DB_ADDR, doc)
+    return data
+
+
 # MONITOR server
 
 def init(config_rev):

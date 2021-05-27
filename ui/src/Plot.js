@@ -3,7 +3,7 @@ import Plotly from 'plotly.js-dist';
 import get_poly_center from './poly_center';
 import gen_test_data from './test';
 
-import { word2vec, getAnalysisResult } from './conn';
+import {  getAnalysisResult } from './conn';
 
 const mapboxToken = "pk.eyJ1IjoieXVuc2h1aSIsImEiOiJja3A0M2Q0dzUxeGpjMzJxcWxxd2NocWVzIn0.19wTZgELWgq3L2Apv8jVeQ"
 
@@ -109,17 +109,26 @@ function get_trace(zone_to_value_data) {
 }
 
 export default function Plot(props) {
-    const { baseline } = props
+    const { baseline, plotType } = props
     React.useEffect(() => {
-        if (!baseline) {
-            scatterMapbox(get_test_trace())
-        } else {
-            getAnalysisResult(baseline)
-                .then(data => {
-                    scatterMapbox(get_trace(data))
-                })
+        switch (plotType) {
+            case "heat-map":
+                if (!baseline) {
+                    scatterMapbox(get_test_trace())
+                } else {
+                    getAnalysisResult(baseline)
+                        .then(data => {
+                            scatterMapbox(get_trace(data))
+                        })
+                }
+                break;
+            case "regression":
+                break;
+            default:
+                console.log(`Unsupported plot type ${plotType}`)
+                break;
         }
-    }, [baseline]);
+    }, [baseline, plotType]);
 
     return (
         <div id="canvas">
@@ -145,4 +154,8 @@ function scatterMapbox(trace) {
     }
 
     Plotly.newPlot('canvas', data, layout)
+}
+
+function regression() {
+
 }
