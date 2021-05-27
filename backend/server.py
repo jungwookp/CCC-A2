@@ -34,7 +34,7 @@ CONFIG_FILE_ID = ""
 
 def make_new_config_doc(server_type):
     return {
-        "id": None,
+        "_id": None,
         "database": {
             "addr": "__something_do_not_exist__",
             "port": "__something_do_not_exist__",
@@ -266,6 +266,11 @@ def create_and_run_monitor():
     app = Flask(__name__)
     CORS(app)  # add CORS support
 
+def run():
+    create_and_run_heartbeat()
+    # heartbeat.start()
+    app.run(host=CONFIG_DOC["server"]["addr"], port=int(
+        CONFIG_DOC['server']['port']), debug=False)
 
 if __name__ == "__main__":
     # global CONFIG_DOC, CONFIG_FILE_ADDR
@@ -275,8 +280,4 @@ if __name__ == "__main__":
     CONFIG_DOC = get_config_doc()
     log(CONFIG_DOC)
     init(CONFIG_DOC["_rev"])
-    # heartbeat = create_heartbeat_daemon()
-    create_and_run_heartbeat()
-    # heartbeat.start()
-    app.run(host=CONFIG_DOC["server"]["addr"], port=int(
-        CONFIG_DOC['server']['port']), debug=False)
+    run()

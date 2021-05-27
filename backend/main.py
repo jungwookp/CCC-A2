@@ -1,6 +1,4 @@
 import argparse
-import sys
-import server
 
 
 def createParser():
@@ -13,35 +11,65 @@ def createParser():
         dest="database",
         required=True,
         help="address of the database, user:password@ip_addr:port")
+
     parser.add_argument(
-        "--twitter_database",
-        dest="twitter_database",
+        "--config",
+        "-c",
+        dest="config_db",
         required=False,
-        default="melbourne",
-        help="database name of preprocessed twitters"
+        default="config",
+        help="database name of config db"
     )
+    
     parser.add_argument(
-        "--word2vec",
-        dest="word2vec",
-        required=False,
-        default="glove-twitter-25",
-        help="name of pretrained word2vec model used for calc vector of tweets,"   
-             "@see https://radimrehurek.com/gensim/auto_examples/howtos/run_downloader_api.html#sphx-glr-auto-examples-howtos-run-downloader-api-py"
+        "--config-file",
+        "-f",
+        dest="config_file",
+        required=True,
+        help="config file id usered to start the server"
     )
+    
     parser.add_argument(
-        "--port",
+        "--config-rev",
+        "-v",
+        dest="config_rev",
         required=False,
-        default="7701",
-        help="inbound port for connection from frontend"
+        default=None,
+        help="revision of the config file"
     )
+
+    parser.add_argument(
+        "--type",
+        "-t",
+        dest="type",
+        default="ui",
+        choices=["ui", "monitor"],
+        help="type of server to run"
+    )
+
     return parser
 
 
 def main():
-    args = sys.argv[1:]
-    config_db_addr = args[0]
-    config_file_id = args[1]
-
+    parser = createParser()
+    args = parser.parse_args()
+    # args = vars(args)
+    if args.type == 'ui':
+        import server
+        server.CONFIG_FILE_ADDR = f"{args.database}/{args.config_db}/{args.config_file}" 
+        server.CONFIG_DOC = server.get_config_doc()
+        rev = server.CONFIG_DOC['_rev'] if args.config_rev is None else args.config_rev
+        server.init(rev)
+        server.create_and_run_heartbeat()
+        server.run()
+    elif args.type == "monitor":
+        import monitor
+        pass
+    else:
+        raise ValueError(f"Unsupported server type {args.type}")
 
 if __name__ == "__main__":
-    parser = createParser()
+    """
+    python main.py -d http://admin:admin@172.26.134.68:5984/ -f backend0
+    """
+    main()
