@@ -39,10 +39,16 @@ export async function word2vec( text ) {
 
 export async function getAURIN( doc ) {
     let response = await fetch(
-        `${ENDPOINT_WORD2VEC}/${doc}`, {
+        `${ENDPOINT_AURIN}/${doc}`, {
         method: "GET",
         mode: "cors",
         redirect: "follow",
     });
     return await response.json()
+}
+
+export async function getAnalysisAndAURIN(baseline, doc) {
+    let analysis = await getAnalysisResult(baseline);
+    let aurin = await getAURIN(doc);
+    return [analysis, aurin]
 }

@@ -229,7 +229,7 @@ def do_analysis():
     return rst
 
 
-@app.route("/aurin/<doc:str>", methods=["GET"])
+@app.route("/aurin/<doc>", methods=["GET"])
 def aurin(doc):
     log("Recv AURIN")
     add_request_static()

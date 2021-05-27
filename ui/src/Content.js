@@ -36,6 +36,7 @@ export default function Content(props) {
                 <Grid item xs={12}> <Typography variant="h4"> {title}  </Typography>  </Grid>
                 <Grid item xs={12}> <Plot baseline={baseline} plotType={plotType} />  </Grid>
                 <Grid item xs={12}> <Typography variant="h4"> {baseline}  </Typography>  </Grid>
+                <Grid item xs={12}> <Typography variant="h4"> {plotType}  </Typography>  </Grid>
             </Grid>
         </React.Fragment>
     )

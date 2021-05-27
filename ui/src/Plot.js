@@ -3,7 +3,7 @@ import Plotly from 'plotly.js-dist';
 import get_poly_center from './poly_center';
 import gen_test_data from './test';
 
-import {  getAnalysisResult } from './conn';
+import { getAnalysisResult, getAnalysisAndAURIN } from './conn';
 
 const mapboxToken = "pk.eyJ1IjoieXVuc2h1aSIsImEiOiJja3A0M2Q0dzUxeGpjMzJxcWxxd2NocWVzIn0.19wTZgELWgq3L2Apv8jVeQ"
 
@@ -75,11 +75,11 @@ function get_trace(zone_to_value_data) {
     const lon = locations.map(ele => ele[0])
 
     let value = list_data.map((ele) => ele[1])
-    
-    const value_average = value.reduce((a, b) => a+b) / value.length;
-    
+
+    const value_average = value.reduce((a, b) => a + b) / value.length;
+
     value = value.map(e => e - value_average);
-    
+
     console.log({
         list_data: list_data,
         value: value
@@ -108,35 +108,6 @@ function get_trace(zone_to_value_data) {
     }
 }
 
-export default function Plot(props) {
-    const { baseline, plotType } = props
-    React.useEffect(() => {
-        switch (plotType) {
-            case "heat-map":
-                if (!baseline) {
-                    scatterMapbox(get_test_trace())
-                } else {
-                    getAnalysisResult(baseline)
-                        .then(data => {
-                            scatterMapbox(get_trace(data))
-                        })
-                }
-                break;
-            case "regression":
-                break;
-            default:
-                console.log(`Unsupported plot type ${plotType}`)
-                break;
-        }
-    }, [baseline, plotType]);
-
-    return (
-        <div id="canvas">
-        </div>
-    )
-}
-
-
 function scatterMapbox(trace) {
     let data = [trace]
     let layout = {
@@ -156,6 +127,56 @@ function scatterMapbox(trace) {
     Plotly.newPlot('canvas', data, layout)
 }
 
-function regression() {
+function regressionPlot(similarity, aurin) {
+   let ymap = new Map(Object.entries(similarity))
+   let xmap = new Map(Object.entries(aurin))
+   let x = [];
+   let y = [];
+   ymap.forEach((v, k, m)=>{
+       if (xmap.has(k)) {
+           x.push(xmap.get(k))
+           y.push(v)
+       }
+   })
+   let trace = {
+       x:x,
+       y:y,
+       type: 'scatter',
+       mode: 'markers'
+   }
 
+   Plotly.newPlot('canvas', [trace])
+}
+
+
+export default function Plot(props) {
+    const { baseline, plotType } = props
+    React.useEffect(() => {
+        if (!baseline) {
+            scatterMapbox(get_test_trace())
+            return
+        }
+        switch (plotType) {
+            case "heat-map":
+                getAnalysisResult(baseline)
+                    .then(data => {
+                        scatterMapbox(get_trace(data))
+                    })
+                break;
+            case "regression":
+                getAnalysisAndAURIN(baseline, 'income').then(rst=>{
+                    let [data, aurin] = rst;
+                    regressionPlot(data, aurin);
+                })
+                break;
+            default:
+                console.log(`Unsupported plot type ${plotType}`)
+                break;
+        }
+    }, [baseline, plotType]);
+
+    return (
+        <div id="canvas">
+        </div>
+    )
 }
